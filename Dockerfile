@@ -16,12 +16,16 @@ RUN npm run build
 
 
 # =========================
-# Django + Scrapy
+# Django + Scrapy + Nginx
 # =========================
 
 FROM python:3.14-slim
 
 WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y nginx supervisor && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
@@ -32,7 +36,12 @@ COPY . .
 # React build
 COPY --from=frontend /frontend/dist ./website/dist
 
-EXPOSE 8000
+# Nginx config
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "nebiralserpback.asgi:application"]
+# Supervisor
+COPY supervisord.conf /app/supervisord.conf
 
+EXPOSE 80
+
+CMD ["supervisord", "-c", "/app/supervisord.conf"]
