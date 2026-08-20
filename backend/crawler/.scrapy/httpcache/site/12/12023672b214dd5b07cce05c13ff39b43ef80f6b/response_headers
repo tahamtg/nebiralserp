@@ -1,0 +1,20 @@
+Content-Length: 133
+Date: Thu, 20 Aug 2026 10:06:19 GMT
+Content-Type: text/plain; charset=utf-8
+Vary: Accept-Encoding
+Vary: Accept-Encoding,Accept-Encoding
+X-Robots-Tag: noindex, follow
+Link: <https://artabeautymag.com/wp-json/>; rel="https://api.w.org/"
+Cache-Control: public, max-age=2592000
+Expires: Sat, 19 Sep 2026 10:01:48 GMT
+Content-Encoding: gzip
+Strict-Transport-Security: max-age=31536000
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+X-Xss-Protection: 1; mode=block
+Server: ArvanCloud
+Server-Timing: total;dur=1766
+X-Cache: BYPASS
+X-Request-Id: 91b80d55ef61ca14b96b92c10b1e64a1
+X-Sid: 2051
+Accept-Ranges: bytes

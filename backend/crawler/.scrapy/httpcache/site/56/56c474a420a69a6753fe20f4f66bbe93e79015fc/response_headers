@@ -1,0 +1,20 @@
+Content-Length: 1748
+Date: Thu, 20 Aug 2026 10:06:36 GMT
+Content-Type: text/html; charset=UTF-8
+Vary: Accept-Encoding
+Vary: Accept-Encoding,Accept-Encoding
+Expires: Wed, 11 Jan 1984 05:00:00 GMT
+Cache-Control: no-cache, must-revalidate, max-age=0, no-store, private
+Set-Cookie: wordpress_test_cookie=WP%20Cookie%20check; path=/; secure; HttpOnly
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Encoding: gzip
+Strict-Transport-Security: max-age=31536000
+X-Content-Type-Options: nosniff
+X-Xss-Protection: 1; mode=block
+Server: ArvanCloud
+Server-Timing: total;dur=7506
+X-Cache: BYPASS
+X-Request-Id: b6d699f7fc5aacf35796fdc0f232755b
+X-Sid: 2051
+Accept-Ranges: bytes

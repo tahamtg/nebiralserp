@@ -1,0 +1,19 @@
+Content-Length: 24123
+Date: Thu, 20 Aug 2026 10:06:39 GMT
+Content-Type: text/html; charset=UTF-8
+Vary: Accept-Encoding
+Vary: Accept-Encoding,Accept-Encoding
+Cache-Control: public, max-age=0
+Expires: Thu, 20 Aug 2026 10:02:09 GMT
+Last-Modified: Wed, 19 Aug 2026 17:04:51 GMT
+Content-Encoding: gzip
+Strict-Transport-Security: max-age=31536000
+X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+X-Xss-Protection: 1; mode=block
+Server: ArvanCloud
+Server-Timing: total;dur=16
+X-Cache: BYPASS
+X-Request-Id: 9e923889fb3892ded13681fa52896880
+X-Sid: 2051
+Accept-Ranges: bytes

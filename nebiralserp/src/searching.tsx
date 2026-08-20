@@ -4,10 +4,13 @@ import "./searching.css";
 interface AnalysisResult {
     id: number;
     url: string;
+    status: number;
     title?: string;
-    meta_description?: string;
-    meta_keywords?: string;
-    h1?: string;
+    description?: string;
+    keywords?: {
+        keyword: string;
+        count: number;
+    }[];
 }
 
 const Searching: React.FC = () => {
@@ -18,7 +21,9 @@ const Searching: React.FC = () => {
     const socketRef = useRef<WebSocket | null>(null);
 
     useEffect(() => {
-        const socket = new WebSocket("ws://127.0.0.1:8000/ws/analyze/");
+        const socket = new WebSocket(
+            "ws://127.0.0.1:8000/ws/analyze/"
+        );
 
         socketRef.current = socket;
 
@@ -27,32 +32,43 @@ const Searching: React.FC = () => {
         };
 
         socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
+            try {
+                const data = JSON.parse(event.data);
 
-            console.log("WebSocket data:", data);
+                console.log("WebSocket data:", data);
 
-            if (data.type === "analysis_result") {
-                setResults((prev) => [
-                    data.result,
-                    ...prev,
-                ]);
+                if (data.type === "pages") {
+                    console.log("PAGES:", data.data);
+                    setResults(data.data);
+                }
 
-                setLoading(false);
-            }
+                if (data.type === "crawl_finished") {
+                    console.log("Crawler finished:", data.url);
 
-            if (data.type === "analysis_error") {
-                console.error(data.message);
-                setLoading(false);
+                    setLoading(false);
+                }
+
+            } catch (error) {
+                console.error(
+                    "WebSocket data error:",
+                    error
+                );
             }
         };
 
         socket.onerror = (error) => {
-            console.error("WebSocket error:", error);
+            console.error(
+                "WebSocket error:",
+                error
+            );
+
             setLoading(false);
         };
 
-        socket.onclose = () => {
+        socket.onclose = (event) => {
             console.log("WebSocket disconnected");
+            console.log("Close code:", event.code);
+            console.log("Close reason:", event.reason);
         };
 
         return () => {
@@ -67,7 +83,10 @@ const Searching: React.FC = () => {
             !socketRef.current ||
             socketRef.current.readyState !== WebSocket.OPEN
         ) {
-            console.error("WebSocket is not connected");
+            console.error(
+                "WebSocket is not connected"
+            );
+
             return;
         }
 
@@ -75,7 +94,7 @@ const Searching: React.FC = () => {
 
         socketRef.current.send(
             JSON.stringify({
-                type: "analyze",
+                type: "start_crawl",
                 url: url.trim(),
             })
         );
@@ -118,9 +137,14 @@ const Searching: React.FC = () => {
 
                     <button
                         onClick={handleSearch}
-                        disabled={loading || !url.trim()}
+                        disabled={
+                            loading ||
+                            !url.trim()
+                        }
                     >
-                        {loading ? "Analyzing..." : "Analyze"}
+                        {loading
+                            ? "Crawling..."
+                            : "Analyze"}
                     </button>
 
                 </div>
@@ -128,51 +152,66 @@ const Searching: React.FC = () => {
                 <div className="results">
 
                     {results.map((result) => (
+
                         <div
                             className="result-card"
                             key={result.id}
                         >
+
                             <div className="result-top">
+
                                 <h2>
-                                    {result.title || "Untitled page"}
+                                    {result.title ||
+                                        "Untitled page"}
                                 </h2>
 
                                 <span>
                                     {result.url}
                                 </span>
+
                             </div>
 
                             <div className="result-info">
 
                                 <div>
-                                    <strong>Meta Description</strong>
+                                    <strong>Status</strong>
 
                                     <p>
-                                        {result.meta_description ||
+                                        {result.status}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        Meta Description
+                                    </strong>
+
+                                    <p>
+                                        {result.description ||
                                             "No meta description"}
                                     </p>
                                 </div>
 
                                 <div>
-                                    <strong>Meta Keywords</strong>
+                                    <strong>
+                                        Keywords
+                                    </strong>
 
-                                    <p>
-                                        {result.meta_keywords ||
-                                            "No meta keywords"}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <strong>H1</strong>
-
-                                    <p>
-                                        {result.h1 ||
-                                            "No H1 found"}
-                                    </p>
+                                    {result.keywords?.map(
+                                        (keyword, index) => (
+                                            <p key={index}>
+                                                {keyword.keyword} (
+                                                {keyword.count}
+                                                )
+                                            </p>
+                                        )
+                                    )}
                                 </div>
 
                             </div>
+
                         </div>
+
                     ))}
 
                 </div>

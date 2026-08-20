@@ -1,0 +1,17 @@
+Content-Length: 42000
+Date: Thu, 20 Aug 2026 13:52:21 GMT
+Content-Type: text/html; charset=utf-8
+Vary: Accept-Encoding
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Etag: W/"34716-EGAUzOL600U+ejGmMTjja+qkmOY"
+X-Powered-By: ASP.NET
+Set-Cookie: SERVERID=JV-WEB-Front-01|aocGm|aocGi; path=/; HttpOnly; Secure
+Cache-Control: private
+X-Xss-Protection: 1; mode=block
+Server: ArvanCloud
+Server-Timing: total;dur=14
+X-Cache: BYPASS
+X-Request-Id: d15038abe73bc7074642ee0b68e6930d
+X-Sid: 2047
+Accept-Ranges: bytes

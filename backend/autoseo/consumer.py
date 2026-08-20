@@ -1,64 +1,77 @@
-import json
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.db import database_sync_to_async
+import subprocess
+from .models import Page
+import asyncio
 
-from asgiref.sync import sync_to_async
-from channels.generic.websocket import AsyncWebsocketConsumer
-from playwright.async_api import async_playwright
 
-class AnanlyzationsUrl(AsyncWebsocketConsumer):
+class AnalysisConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
-
-        from .models import Analysis
-        self.room = self.scope["url_route"]["kwargs"]["room"]
-        self.group_room = f"url+{self.room}"
-
-        await self.channel_layer.group_add(
-            self.group_room,
-            self.channel_name
-        )
-
         await self.accept()
 
-async def GotoUrl():
-    
+    @database_sync_to_async
+    def get_pages(self):
 
-async def receive(self, text_data=None, bytes_data=None):
+        pages = Page.objects.all()
 
-    from .models import Page, Analysis
-
-    data = json.loads(text_data)
-    types = data.get("type")
-
-    if types == "analyze":
-
-        url = data.get("url")
-
-        if not url:
-            return
-
-        analysis = await sync_to_async(
-            Analysis.objects.create
-        )(
-            url=url
-        )
-
-        model = await sync_to_async(
-            Page.objects.create
-        )(
-            analysis=analysis,
-            url=url,
-            title="Test title",
-            meta_description="Test description",
-            meta_keywords="test, seo",
-        )
-
-        await self.channel_layer.group_send(
-            self.group_room,
+        return [
             {
-                "type": "sendDetails",
-                "title": model.title,
-                "meta_description": model.meta_description,
-                "meta_keywords": model.meta_keywords,
+                "id": page.id,
+                "url": page.url,
+                "status": page.status_code,
+                "title": page.title,
+                "description": page.meta_description,
+                "keywords": page.keywords,
             }
-        )
-            
+            for page in pages
+        ]
+
+    async def start_crawler(self, start_url):
+
+        def run():
+
+            process = subprocess.run(
+                [
+                    "scrapy",
+                    "crawl",
+                    "site",
+                    "-a",
+                    f"start_url={start_url}",
+                ],
+                cwd="crawler"
+            )
+
+            return process.returncode
+
+        return await asyncio.to_thread(run)
+
+    async def receive_json(self, content, **kwargs):
+
+        message_type = content.get("type")
+
+        if message_type == "start_crawl":
+
+            start_url = content.get("url")
+
+            await self.send_json({
+                "type": "crawl_started",
+                "url": start_url
+            })
+
+            return_code = await self.start_crawler(start_url)
+
+            await self.send_json({
+                "type": "crawl_finished",
+                "url": start_url,
+                "success": return_code == 0
+            })
+
+            pages = await self.get_pages()
+
+            await self.send_json({
+                "type": "pages",
+                "data": pages
+            })
+
+            print("START URL:", start_url)

@@ -1,0 +1,15 @@
+Date: Thu, 20 Aug 2026 02:08:11 GMT
+Content-Type: text/html; charset=UTF-8
+Vary: Accept-Encoding
+Vary: Accept-Encoding,Accept-Encoding
+Link: <https://dr-molaei.ir/wp-json/>; rel="https://api.w.org/"
+Link: <https://dr-molaei.ir/wp-json/wp/v2/pages/1173>; rel="alternate"; title="JSON"; type="application/json"
+Link: <https://dr-molaei.ir/?p=1173>; rel=shortlink
+Cache-Control: public, max-age=0
+Expires: Thu, 20 Aug 2026 02:08:11 GMT
+Content-Encoding: gzip
+Server: ArvanCloud
+Server-Timing: total;dur=15848
+X-Cache: BYPASS
+X-Request-Id: 215afd5a65492512477527b6783624b4
+X-Sid: 2077
