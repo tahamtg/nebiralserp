@@ -1,2 +1,1 @@
-web: supervisord -c /app/supervisord.conf
-
+web: supervisord -c /etc/supervisor/conf.d/supervisord.conf

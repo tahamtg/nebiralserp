@@ -1,47 +1,49 @@
-# =========================
-# React Build
-# =========================
-
-FROM node:22 AS frontend
+# ========= Build React =========
+FROM node:22 AS frontend-builder
 
 WORKDIR /frontend
 
-COPY website/package*.json ./
+COPY nebiralserp/package*.json ./
 
 RUN npm install
 
-COPY website/ .
+COPY nebiralserp/ .
 
 RUN npm run build
 
 
-# =========================
-# Django + Scrapy + Nginx
-# =========================
+# ========= Python =========
+FROM python:3.13-slim
 
-FROM python:3.14-slim
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y nginx supervisor && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    gcc \
+    nginx \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY backend/requirements.txt .
+
+RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Django + Scrapy
+COPY backend/ /app/
 
-# React build
-COPY --from=frontend /frontend/dist ./website/dist
+# React → Nginx
+COPY --from=frontend-builder /frontend/dist /usr/share/nginx/html
 
-# Nginx config
+# Nginx
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Supervisor
-COPY supervisord.conf /app/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
 
-CMD ["supervisord", "-c", "/app/supervisord.conf"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"]

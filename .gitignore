@@ -1,0 +1,83 @@
+# =========================
+# Logs
+# =========================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# =========================
+# Frontend
+# =========================
+
+nebiralserp/node_modules/
+nebiralserp/dist/
+nebiralserp/dist-ssr/
+nebiralserp/*.local
+
+
+# =========================
+# Python
+# =========================
+
+backend/venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/**/*.pyd
+
+backend/db.sqlite3
+
+
+# =========================
+# Environment
+# =========================
+
+.env
+backend/.env
+
+
+# =========================
+# Django
+# =========================
+
+backend/staticfiles/
+backend/media/
+
+
+# =========================
+# Scrapy
+# =========================
+
+backend/crawler/.scrapy/
+
+
+# =========================
+# Editor
+# =========================
+
+.vscode/*
+!.vscode/extensions.json
+
+.idea/
+
+.DS_Store
+
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+# =========================
+# Python cache
+# =========================
+
+__pycache__/
+*.py[cod]
