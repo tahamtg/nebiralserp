@@ -22,7 +22,7 @@ const Searching: React.FC = () => {
 
     useEffect(() => {
         const socket = new WebSocket(
-            "ws://127.0.0.1:8000/ws/analyze/"
+            "wss://nebiral.ir/ws/analyze/"
         );
 
         socketRef.current = socket;
