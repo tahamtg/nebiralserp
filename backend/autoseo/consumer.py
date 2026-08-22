@@ -28,7 +28,7 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
         ]
 
     @database_sync_to_async
-    def del_model():
+    def del_model(self):
         Page.objects.all().delete()
         
     async def start_crawler(self, start_url):
