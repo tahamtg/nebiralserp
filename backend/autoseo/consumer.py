@@ -3,7 +3,6 @@ from channels.db import database_sync_to_async
 import subprocess
 from .models import Page
 import asyncio
-from asgiref import sync_to_async
 
 
 class AnalysisConsumer(AsyncJsonWebsocketConsumer):
