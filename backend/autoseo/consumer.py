@@ -28,6 +28,10 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
             for page in pages
         ]
 
+    @database_sync_to_async
+    def del_model():
+        Page.objects.all().delete()
+        
     async def start_crawler(self, start_url):
 
         def run():
@@ -60,11 +64,7 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
                 "url": start_url
             })
 
-            async def del_model():
-             
-                sync_to_async(Page.objects.all().delete())
-
-            await del_model()
+            await self.del_model()
 
             return_code = await self.start_crawler(start_url)
 
