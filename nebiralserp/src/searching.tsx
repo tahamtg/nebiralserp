@@ -25,6 +25,7 @@ interface SEOCheck {
 }
 
 const Searching: React.FC = () => {
+
     const [url, setUrl] = useState("");
     const [results, setResults] = useState<AnalysisResult[]>([]);
     const [loading, setLoading] = useState(false);
@@ -32,6 +33,7 @@ const Searching: React.FC = () => {
     const socketRef = useRef<WebSocket | null>(null);
 
     useEffect(() => {
+
         const socket = new WebSocket(
             "wss://nebiral.ir/ws/analyze/"
         );
@@ -43,16 +45,17 @@ const Searching: React.FC = () => {
         };
 
         socket.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
 
-                console.log("WebSocket data:", data);
+            try {
+
+                const data = JSON.parse(event.data);
 
                 if (data.type === "pages") {
                     setResults(data.data);
                 }
 
                 if (data.type === "crawl_finished") {
+
                     console.log(
                         "Crawler finished:",
                         data.url
@@ -62,14 +65,17 @@ const Searching: React.FC = () => {
                 }
 
             } catch (error) {
+
                 console.error(
                     "WebSocket data error:",
                     error
                 );
+
             }
         };
 
         socket.onerror = (error) => {
+
             console.error(
                 "WebSocket error:",
                 error
@@ -79,6 +85,7 @@ const Searching: React.FC = () => {
         };
 
         socket.onclose = (event) => {
+
             console.log(
                 "WebSocket disconnected"
             );
@@ -92,40 +99,49 @@ const Searching: React.FC = () => {
                 "Close reason:",
                 event.reason
             );
+
         };
 
         return () => {
             socket.close();
         };
+
     }, []);
 
     const analyzeTitle = (
         title?: string
     ): SEOCheck => {
+
         const value = title?.trim() || "";
 
         if (!value) {
+
             return {
                 label: "Title",
                 status: "red",
                 message: "Title وجود ندارد",
             };
+
         }
 
         if (value.length < 30) {
+
             return {
                 label: "Title",
                 status: "orange",
                 message: `Title کوتاه است (${value.length} کاراکتر)`,
             };
+
         }
 
         if (value.length > 60) {
+
             return {
                 label: "Title",
                 status: "orange",
                 message: `Title طولانی است (${value.length} کاراکتر)`,
             };
+
         }
 
         return {
@@ -133,36 +149,44 @@ const Searching: React.FC = () => {
             status: "green",
             message: `Title مناسب است (${value.length} کاراکتر)`,
         };
+
     };
 
     const analyzeDescription = (
         description?: string
     ): SEOCheck => {
+
         const value =
             description?.trim() || "";
 
         if (!value) {
+
             return {
                 label: "Meta Description",
                 status: "red",
                 message: "Meta Description وجود ندارد",
             };
+
         }
 
         if (value.length < 120) {
+
             return {
                 label: "Meta Description",
                 status: "orange",
                 message: `Meta Description کوتاه است (${value.length} کاراکتر)`,
             };
+
         }
 
         if (value.length > 160) {
+
             return {
                 label: "Meta Description",
                 status: "orange",
                 message: `Meta Description طولانی است (${value.length} کاراکتر)`,
             };
+
         }
 
         return {
@@ -170,19 +194,23 @@ const Searching: React.FC = () => {
             status: "green",
             message: `Meta Description مناسب است (${value.length} کاراکتر)`,
         };
+
     };
 
     const analyzeAlt = (
         alt?: string[]
     ): SEOCheck => {
+
         const images = alt || [];
 
         if (images.length === 0) {
+
             return {
                 label: "Image Alt",
                 status: "orange",
                 message: "تصویری در صفحه پیدا نشد",
             };
+
         }
 
         const missingAlt = images.filter(
@@ -190,19 +218,23 @@ const Searching: React.FC = () => {
         ).length;
 
         if (missingAlt === images.length) {
+
             return {
                 label: "Image Alt",
                 status: "red",
                 message: "تمام تصاویر فاقد Alt هستند",
             };
+
         }
 
         if (missingAlt > 0) {
+
             return {
                 label: "Image Alt",
                 status: "orange",
                 message: `${missingAlt} تصویر فاقد Alt است`,
             };
+
         }
 
         return {
@@ -210,27 +242,33 @@ const Searching: React.FC = () => {
             status: "green",
             message: `تمام ${images.length} تصویر دارای Alt هستند`,
         };
+
     };
 
     const analyzeKeywords = (
         keywords?: Keyword[]
     ): SEOCheck => {
+
         const items = keywords || [];
 
         if (items.length === 0) {
+
             return {
                 label: "Keywords",
                 status: "red",
                 message: "Keyword مناسبی پیدا نشد",
             };
+
         }
 
         if (items.length < 3) {
+
             return {
                 label: "Keywords",
                 status: "orange",
                 message: `تعداد کمی Keyword پیدا شد (${items.length})`,
             };
+
         }
 
         return {
@@ -238,20 +276,24 @@ const Searching: React.FC = () => {
             status: "green",
             message: `${items.length} Keyword پیدا شد`,
         };
+
     };
 
     const analyzePage = (
         result: AnalysisResult
     ): SEOCheck[] => {
+
         return [
             analyzeTitle(result.title),
             analyzeDescription(result.description),
             analyzeAlt(result.alt),
             analyzeKeywords(result.keywords),
         ];
+
     };
 
     const handleSearch = () => {
+
         if (!url.trim()) {
             return;
         }
@@ -260,6 +302,7 @@ const Searching: React.FC = () => {
             !socketRef.current ||
             socketRef.current.readyState !== WebSocket.OPEN
         ) {
+
             console.error(
                 "WebSocket is not connected"
             );
@@ -278,14 +321,17 @@ const Searching: React.FC = () => {
         );
 
         setUrl("");
+
     };
 
     const handleKeyDown = (
         event: React.KeyboardEvent<HTMLInputElement>
     ) => {
+
         if (event.key === "Enter") {
             handleSearch();
         }
+
     };
 
     return (
@@ -294,11 +340,13 @@ const Searching: React.FC = () => {
             <div className="searching-container">
 
                 <div className="searching-header">
+
                     <h1>SEO AI</h1>
 
                     <p>
                         Analyze your website and discover SEO opportunities
                     </p>
+
                 </div>
 
                 <div className="search-box">
@@ -321,14 +369,17 @@ const Searching: React.FC = () => {
                             !url.trim()
                         }
                     >
+
                         {loading
                             ? "Crawling..."
                             : "Analyze"}
+
                     </button>
 
                 </div>
 
                 {loading && (
+
                     <div className="crawler-loading">
 
                         <div className="spinner"></div>
@@ -342,6 +393,7 @@ const Searching: React.FC = () => {
                         </span>
 
                     </div>
+
                 )}
 
                 <div className="results">
@@ -352,6 +404,7 @@ const Searching: React.FC = () => {
                             analyzePage(result);
 
                         return (
+
                             <div
                                 className="result-card"
                                 key={result.id}
@@ -373,6 +426,7 @@ const Searching: React.FC = () => {
                                 <div className="result-info">
 
                                     <div>
+
                                         <strong>
                                             Status
                                         </strong>
@@ -380,14 +434,17 @@ const Searching: React.FC = () => {
                                         <p>
                                             {result.status}
                                         </p>
+
                                     </div>
 
                                     {checks.map(
                                         (check) => (
+
                                             <div
                                                 key={check.label}
                                                 className={`seo-check ${check.status}`}
                                             >
+
                                                 <div className="seo-check-title">
 
                                                     <span
@@ -405,10 +462,12 @@ const Searching: React.FC = () => {
                                                 </p>
 
                                             </div>
+
                                         )
                                     )}
 
                                     <div>
+
                                         <strong>
                                             Keywords
                                         </strong>
@@ -418,19 +477,53 @@ const Searching: React.FC = () => {
                                                 keyword,
                                                 index
                                             ) => (
+
                                                 <p
                                                     key={index}
                                                 >
-                                                    {
-                                                        keyword.keyword
-                                                    }{" "}
+
+                                                    {keyword.keyword}{" "}
                                                     (
-                                                    {
-                                                        keyword.count
-                                                    }
+                                                    {keyword.count}
                                                     )
+
                                                 </p>
+
                                             )
+                                        )}
+
+                                    </div>
+
+                                    <div>
+
+                                        <strong>
+                                            Image Alt
+                                        </strong>
+
+                                        {result.alt?.length ? (
+
+                                            result.alt.map(
+                                                (
+                                                    alt,
+                                                    index
+                                                ) => (
+
+                                                    <p
+                                                        key={index}
+                                                    >
+                                                        {alt ||
+                                                            "بدون Alt"}
+                                                    </p>
+
+                                                )
+                                            )
+
+                                        ) : (
+
+                                            <p>
+                                                تصویری پیدا نشد
+                                            </p>
+
                                         )}
 
                                     </div>
@@ -438,7 +531,9 @@ const Searching: React.FC = () => {
                                 </div>
 
                             </div>
+
                         );
+
                     })}
 
                 </div>
@@ -447,6 +542,7 @@ const Searching: React.FC = () => {
 
         </main>
     );
+
 };
 
 export default Searching;
