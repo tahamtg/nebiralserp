@@ -23,6 +23,7 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
                 "title": page.title,
                 "description": page.meta_description,
                 "keywords": page.keywords,
+                "alt": page.alt,
             }
             for page in pages
         ]

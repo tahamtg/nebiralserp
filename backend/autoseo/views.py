@@ -15,6 +15,7 @@ def save_page(request):
                 "title": data.get("title") or "",
                 "meta_description": data.get("description") or "",
                 "keywords": data.get("keywords") or [],
+                "alt": data.get("alt") or "",
             }
         )
 

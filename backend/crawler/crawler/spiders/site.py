@@ -29,7 +29,7 @@ class WebsiteSpider(scrapy.Spider):
 
         if response.status >= 500:
             print(
-                "🔥 TARGET WEBSITE ERROR:",
+                "TARGET WEBSITE ERROR:",
                 response.status,
                 response.url
             )
@@ -49,22 +49,36 @@ class WebsiteSpider(scrapy.Spider):
             text
         )
 
-        bigram = list(zip(words, words[1:]))
+        onekeyword = words
 
-        phrases = [
+       
+        second_keywords = [
             f"{first} {second}"
-            for first, second in bigram
+            for first, second in zip(words, words[1:])
         ]
 
-        word_counts = Counter(phrases)
 
-        keys = [
-            {
-                "keyword": ks,
+        third_keywords = [
+            f"{first} {second} {third}"
+            for first, second, third in zip(
+                words,
+                words[1:],
+                words[2:]
+            )
+        ]
+
+        pharses = onekeyword + second_keywords + third_keywords
+
+        words_count = Counter(pharses)
+
+        for key, count in words_count.most_common(30):
+            key= {
+                "key": key,
                 "count": count,
             }
-            for ks, count in word_counts.most_common(15)
-        ]
+                
+        
+        alt = response.css("img::attr(alt)").getall()
 
         keywordPage = response.css(
             "meta[name='keywords']::attr(content)"
@@ -75,8 +89,9 @@ class WebsiteSpider(scrapy.Spider):
             "status": response.status,
             "title": title,
             "description": description,
-            "keywords": keys,
+            "keywords": key,
             "keyword": keywordPage,
+            "alt": alt,
         }
 
         response_save = requests.post(
