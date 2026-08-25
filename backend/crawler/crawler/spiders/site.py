@@ -71,11 +71,13 @@ class WebsiteSpider(scrapy.Spider):
 
         words_count = Counter(pharses)
 
+        keywords = []
+
         for key, count in words_count.most_common(30):
-            key= {
+            keywords.append( {
                 "key": key,
                 "count": count,
-            }
+            })
                 
         
         alt = response.css("img::attr(alt)").getall()
@@ -89,7 +91,7 @@ class WebsiteSpider(scrapy.Spider):
             "status": response.status,
             "title": title,
             "description": description,
-            "keywords": key,
+            "keywords": keywords,
             "keyword": keywordPage,
             "alt": alt,
         }

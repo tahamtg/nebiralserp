@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./searching.css";
 
 interface Keyword {
-    keyword: string;
+    key: string;
     count: number;
 }
 
@@ -482,7 +482,7 @@ const Searching: React.FC = () => {
                                                     key={index}
                                                 >
 
-                                                    {keyword.keyword}{" "}
+                                                    {keyword.key}{" "}
                                                     (
                                                     {keyword.count}
                                                     )
