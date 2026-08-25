@@ -32,16 +32,16 @@ RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Django + Scrapy
+
 COPY backend/ /app/
 
-# React → Nginx
+
 COPY --from=frontend-builder /frontend/dist /usr/share/nginx/html
 
-# Nginx
+
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
-# Supervisor
+
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80
