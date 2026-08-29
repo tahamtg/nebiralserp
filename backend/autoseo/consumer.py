@@ -74,6 +74,10 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
               f"https://www.google.com/search?q={keyword}"
           )
 
+          print(await page.title())
+          print(page.url)
+          print((await page.locator("body").inner_text())[:2000])
+
           links = page.locator("a")
 
           result= []
