@@ -78,7 +78,7 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
 
           result= []
 
-          for i in range(3):
+          for i in range(await links.count()):
             urls = links.nth(i)
             titlesite = await urls.inner_text()
             href = await urls.get_attribute("href")
@@ -91,6 +91,8 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
           data={
               "result": result,
           }
+
+          print(data)
 
           await self.create_opponent(data)
 
