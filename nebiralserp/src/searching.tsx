@@ -16,6 +16,11 @@ interface AnalysisResult {
     alt?: string[];
 }
 
+interface Opponent {
+    title: string;
+    urlsite: string;
+}
+
 type StatusType = "red" | "orange" | "green";
 
 interface SEOCheck {
@@ -27,10 +32,20 @@ interface SEOCheck {
 const Searching: React.FC = () => {
 
     const [url, setUrl] = useState("");
-    const [results, setResults] = useState<AnalysisResult[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [keyword, setKeyword] = useState("");
 
-    const socketRef = useRef<WebSocket | null>(null);
+    const [results, setResults] =
+        useState<AnalysisResult[]>([]);
+
+    const [opponents, setOpponents] =
+        useState<Opponent[]>([]);
+
+    const [loading, setLoading] = useState(false);
+    const [opponentLoading, setOpponentLoading] =
+        useState(false);
+
+    const socketRef =
+        useRef<WebSocket | null>(null);
 
     useEffect(() => {
 
@@ -64,6 +79,21 @@ const Searching: React.FC = () => {
                     setLoading(false);
                 }
 
+                if (data.type === "analyz_started") {
+
+                    setOpponentLoading(true);
+                    setOpponents([]);
+                }
+
+                if (data.type === "opponents_analyzed") {
+
+                    setOpponents(
+                        data.data.result
+                    );
+
+                    setOpponentLoading(false);
+                }
+
             } catch (error) {
 
                 console.error(
@@ -82,6 +112,7 @@ const Searching: React.FC = () => {
             );
 
             setLoading(false);
+            setOpponentLoading(false);
         };
 
         socket.onclose = (event) => {
@@ -99,7 +130,6 @@ const Searching: React.FC = () => {
                 "Close reason:",
                 event.reason
             );
-
         };
 
         return () => {
@@ -121,7 +151,6 @@ const Searching: React.FC = () => {
                 status: "red",
                 message: "Title وجود ندارد",
             };
-
         }
 
         if (value.length < 30) {
@@ -131,7 +160,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: `Title کوتاه است (${value.length} کاراکتر)`,
             };
-
         }
 
         if (value.length > 60) {
@@ -141,7 +169,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: `Title طولانی است (${value.length} کاراکتر)`,
             };
-
         }
 
         return {
@@ -149,7 +176,6 @@ const Searching: React.FC = () => {
             status: "green",
             message: `Title مناسب است (${value.length} کاراکتر)`,
         };
-
     };
 
     const analyzeDescription = (
@@ -166,7 +192,6 @@ const Searching: React.FC = () => {
                 status: "red",
                 message: "Meta Description وجود ندارد",
             };
-
         }
 
         if (value.length < 120) {
@@ -176,7 +201,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: `Meta Description کوتاه است (${value.length} کاراکتر)`,
             };
-
         }
 
         if (value.length > 160) {
@@ -186,7 +210,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: `Meta Description طولانی است (${value.length} کاراکتر)`,
             };
-
         }
 
         return {
@@ -194,7 +217,6 @@ const Searching: React.FC = () => {
             status: "green",
             message: `Meta Description مناسب است (${value.length} کاراکتر)`,
         };
-
     };
 
     const analyzeAlt = (
@@ -210,7 +232,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: "تصویری در صفحه پیدا نشد",
             };
-
         }
 
         const missingAlt = images.filter(
@@ -224,7 +245,6 @@ const Searching: React.FC = () => {
                 status: "red",
                 message: "تمام تصاویر فاقد Alt هستند",
             };
-
         }
 
         if (missingAlt > 0) {
@@ -234,7 +254,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: `${missingAlt} تصویر فاقد Alt است`,
             };
-
         }
 
         return {
@@ -242,7 +261,6 @@ const Searching: React.FC = () => {
             status: "green",
             message: `تمام ${images.length} تصویر دارای Alt هستند`,
         };
-
     };
 
     const analyzeKeywords = (
@@ -258,7 +276,6 @@ const Searching: React.FC = () => {
                 status: "red",
                 message: "Keyword مناسبی پیدا نشد",
             };
-
         }
 
         if (items.length < 3) {
@@ -268,7 +285,6 @@ const Searching: React.FC = () => {
                 status: "orange",
                 message: `تعداد کمی Keyword پیدا شد (${items.length})`,
             };
-
         }
 
         return {
@@ -276,7 +292,6 @@ const Searching: React.FC = () => {
             status: "green",
             message: `${items.length} Keyword پیدا شد`,
         };
-
     };
 
     const analyzePage = (
@@ -289,7 +304,6 @@ const Searching: React.FC = () => {
             analyzeAlt(result.alt),
             analyzeKeywords(result.keywords),
         ];
-
     };
 
     const handleSearch = () => {
@@ -321,7 +335,35 @@ const Searching: React.FC = () => {
         );
 
         setUrl("");
+    };
 
+    const handleOpponentSearch = () => {
+
+        if (!keyword.trim()) {
+            return;
+        }
+
+        if (
+            !socketRef.current ||
+            socketRef.current.readyState !== WebSocket.OPEN
+        ) {
+
+            console.error(
+                "WebSocket is not connected"
+            );
+
+            return;
+        }
+
+        setOpponentLoading(true);
+        setOpponents([]);
+
+        socketRef.current.send(
+            JSON.stringify({
+                type: "start_opponent_analyz",
+                keyword: keyword.trim(),
+            })
+        );
     };
 
     const handleKeyDown = (
@@ -331,7 +373,15 @@ const Searching: React.FC = () => {
         if (event.key === "Enter") {
             handleSearch();
         }
+    };
 
+    const handleKeywordKeyDown = (
+        event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+
+        if (event.key === "Enter") {
+            handleOpponentSearch();
+        }
     };
 
     return (
@@ -377,6 +427,87 @@ const Searching: React.FC = () => {
                     </button>
 
                 </div>
+
+                <div className="search-box">
+
+                    <input
+                        type="text"
+                        value={keyword}
+                        onChange={(event) =>
+                            setKeyword(event.target.value)
+                        }
+                        onKeyDown={handleKeywordKeyDown}
+                        placeholder="Enter keyword..."
+                        disabled={opponentLoading}
+                    />
+
+                    <button
+                        onClick={handleOpponentSearch}
+                        disabled={
+                            opponentLoading ||
+                            !keyword.trim()
+                        }
+                    >
+
+                        {opponentLoading
+                            ? "Analyzing..."
+                            : "Analyze Keyword"}
+
+                    </button>
+
+                </div>
+
+                {opponentLoading && (
+
+                    <div className="crawler-loading">
+
+                        <div className="spinner"></div>
+
+                        <p>
+                            در حال پیدا کردن رقبا...
+                        </p>
+
+                    </div>
+
+                )}
+
+                {opponents.length > 0 && (
+
+                    <div className="results">
+
+                        <h2>
+                            Top 3 Competitors
+                        </h2>
+
+                        {opponents.map(
+                            (opponent, index) => (
+
+                                <div
+                                    className="result-card"
+                                    key={index}
+                                >
+
+                                    <div className="result-top">
+
+                                        <h2>
+                                            {opponent.title ||
+                                                "Untitled"}
+                                        </h2>
+
+                                        <span>
+                                            {opponent.urlsite}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            )
+                        )}
+
+                    </div>
+
+                )}
 
                 {loading && (
 
@@ -542,7 +673,6 @@ const Searching: React.FC = () => {
 
         </main>
     );
-
 };
 
 export default Searching;

@@ -461,3 +461,102 @@ body,
         width: 100%;
     }
 }
+
+.search-box + .search-box {
+    margin-top: 14px;
+}
+
+.opponents-title {
+    margin: 0 0 5px;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.opponent-card {
+    position: relative;
+
+    padding: 18px 20px;
+
+    border-radius: 17px;
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(100, 80, 255, 0.07),
+            transparent 40%
+        ),
+        rgba(255, 255, 255, 0.025);
+
+    backdrop-filter: blur(15px);
+
+    transition: 0.2s ease;
+}
+
+.opponent-card:hover {
+    border-color: rgba(255, 255, 255, 0.13);
+
+    transform: translateY(-2px);
+}
+
+.opponent-number {
+    position: absolute;
+
+    top: 18px;
+    right: 20px;
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(124, 108, 255, 0.12);
+
+    color: #9b91ff;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.opponent-card h3 {
+    margin: 0 40px 7px 0;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.opponent-card a {
+    color: #777780;
+
+    font-size: 12px;
+
+    text-decoration: none;
+
+    overflow-wrap: anywhere;
+}
+
+.opponent-card a:hover {
+    color: #9b91ff;
+}
+
+@media (max-width: 600px) {
+
+    .opponent-card {
+        padding: 16px;
+    }
+
+    .opponent-number {
+        top: 16px;
+        right: 16px;
+    }
+
+}
+

@@ -1,8 +1,10 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 import subprocess
-from .models import Page
+from .models import Page, opponent
 import asyncio
+from playwright.async_api import async_playwright
+from urllib.parse import quote_plus
 
 
 class AnalysisConsumer(AsyncJsonWebsocketConsumer):
@@ -51,6 +53,51 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
 
         return await asyncio.to_thread(run)
 
+
+    @database_sync_to_async
+    def create_opponent(self, data):
+        return opponent.objects.create(
+            result_analyz=data
+        )
+
+    async def main(self, key):
+      
+      async with async_playwright as p:
+          
+          browser = await p.chromium.launch(headless=True) 
+
+          page = await browser.new_page()
+
+          keyword = quote_plus(key)
+
+          await page.goto(
+              f"https://www.google.com/search?q={keyword}"
+          )
+
+          links = page.locator("a.ZReHs")
+
+          result= []
+
+          for i in range(3):
+            urls = links.nth(i)
+            titlesite = await urls.inner_text()
+            href = await urls.get_attribute("href")
+
+            result.append({
+                "title": titlesite,
+                "urlsite": href,
+            })
+
+          data={
+              "result": result,
+          }
+
+          await self.create_opponent(data)
+
+          await browser.close()
+
+          return data
+
     async def receive_json(self, content, **kwargs):
 
         message_type = content.get("type")
@@ -82,3 +129,18 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
             })
 
             print("START URL:", start_url)
+
+        if message_type == "start_opponent_analyz":
+
+            start_keyword = content.get("keyword")
+
+            await self.send_json({
+                "type": "analyz_started"
+            })
+
+            data = await self.main(start_keyword)
+
+            await self.send_json({
+                "type": "opponents_analyzed",
+                "data": data
+            })
