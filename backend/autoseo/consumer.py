@@ -62,7 +62,7 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
 
     async def main(self, key):
       
-      async with async_playwright as p:
+      async with async_playwright() as p:
           
           browser = await p.chromium.launch(headless=True) 
 
