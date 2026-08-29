@@ -74,7 +74,7 @@ class AnalysisConsumer(AsyncJsonWebsocketConsumer):
               f"https://www.google.com/search?q={keyword}"
           )
 
-          links = page.locator("a.ZReHs")
+          links = page.locator("a")
 
           result= []
 
